@@ -34,7 +34,7 @@ export default function AdminDashboard({ onLogout }) {
   // Fetch registrations when filters change
   useEffect(() => {
     fetchRegistrations()
-  }, [filterBranch, filterProgram])
+  }, [filterBranch, filterProgram, fetchRegistrations])
 
   // Filter registrations based on search term
   const filteredRegistrations = registrations.filter(registration =>

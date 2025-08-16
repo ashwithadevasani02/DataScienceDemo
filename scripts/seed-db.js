@@ -132,16 +132,23 @@ const Registration = mongoose.model('Registration', registrationSchema)
 
 async function seedDatabase() {
   try {
+    // Connect to MongoDB
     await mongoose.connect(MONGODB_URI)
+    console.log('Connected to MongoDB')
 
+    // Drop users collection and its indexes to fully clear old data and indexes
     try {
       await mongoose.connection.db.dropCollection('users');
+      console.log('Dropped users collection');
     } catch (err) {
-      if (err.code !== 26) {
+      if (err.code === 26) {
+        console.log('Users collection does not exist, skipping drop');
+      } else {
         throw err;
       }
     }
     await Registration.deleteMany({})
+    console.log('Cleared existing data')
 
     // Create admin user
     require('dotenv').config();
@@ -159,6 +166,7 @@ async function seedDatabase() {
       isVerified: true
     })
     await adminUser.save()
+    console.log('Admin user created:', adminUser.email)
 
     // Create demo student user
     const hashedStudentPassword = await bcrypt.hash('student123', 10);
@@ -172,8 +180,19 @@ async function seedDatabase() {
       isVerified: true
     })
     await studentUser.save()
+    console.log('Demo student created:', studentUser.email)
 
-    console.log('Database seeded successfully!')
+  // No sample registrations created
+
+    // Print all users for verification
+    const allUsers = await User.find({})
+    console.log('\nAll users in database:')
+    allUsers.forEach(u => {
+      console.log({ username: u.username, email: u.email, userType: u.userType })
+    })
+
+    console.log('\n✅ Database seeded successfully!')
+    console.log('\nDemo Credentials:')
     console.log('Admin: admin@dsclub.com / admin123')
     console.log('Student: student@demo.com / student123')
 
@@ -181,7 +200,8 @@ async function seedDatabase() {
     console.error('Error seeding database:', error)
   } finally {
     await mongoose.disconnect()
+    console.log('Disconnected from MongoDB')
   }
 }
 
-seedDatabase()
+seedDatabase() 

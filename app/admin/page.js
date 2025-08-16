@@ -1,6 +1,6 @@
 'use client'
 import Image from "next/image";
-import {useState} from 'react'
+import { useState, useEffect } from 'react'
 import AdminDashboard from '../components/AdminDashboard'
 import LoginForm from '../components/LoginForm'
 export default function AdminPage() {

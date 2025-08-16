@@ -217,7 +217,7 @@ export default function Home() {
                       Registration Successful!
                     </h2>
                     <p className="text-lg text-gray-600 mb-6">
-                      Thank you for registering with Data Science Club. We&apos;ve received your application and will contact you soon with further details.
+                      Thank you for registering with Data Science Club. We've received your application and will contact you soon with further details.
                     </p>
                     <div className="bg-green-50 rounded-lg p-4">
                       <p className="text-sm text-green-700">

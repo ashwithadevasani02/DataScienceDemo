@@ -8,8 +8,6 @@ export async function POST(request) {
   try {
     await connectDB()
     const { fullName, email, password, phoneNumber } = await request.json()
-    
-    // Check if email already exists
     const existingUserByEmail = await User.findOne({ email })
     if (existingUserByEmail) {
       return NextResponse.json(
@@ -17,13 +15,9 @@ export async function POST(request) {
         { status: 400 }
       )
     }
-    
-    // Generate unique username from email
     const baseUsername = email.split('@')[0]
     let username = baseUsername
     let counter = 1
-    
-    // Ensure username is unique
     while (await User.findOne({ username })) {
       username = `${baseUsername}${counter}`
       counter++
@@ -54,15 +48,25 @@ export async function POST(request) {
       })
     } catch (emailError) {
       console.error('Failed to send OTP email:', emailError)
+      console.error('Email error details:', {
+        message: emailError.message,
+        code: emailError.code,
+        command: emailError.command
+      })
       await User.findByIdAndDelete(user._id)
       return NextResponse.json(
-        { error: 'Account created but failed to send verification email. Please try again or contact support.' },
+        { error: 'Account created but failed to send verification email. Please check email configuration.' },
         { status: 500 }
       )
     }
     
   } catch (error) {
     console.error('Signup error:', error)
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    })
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

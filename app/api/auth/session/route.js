@@ -2,45 +2,63 @@ import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import User from '@/models/User'
 
-// In-memory session store (in production, use Redis or database)
-const sessions = new Map()
+export const runtime = 'nodejs'
 
+// Database-based session management for serverless deployment
 export async function POST(request) {
   try {
+    await connectDB()
     const { action, sessionId, userData } = await request.json()
     
     if (action === 'create') {
-      // Create new session
+      // Create new session - store in user document
       const sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-      const expiresAt = Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+      const expiresAt = new Date(Date.now() + (24 * 60 * 60 * 1000)) // 24 hours
       
-      sessions.set(sessionId, {
-        userData,
-        expiresAt
+      // Update user with session data
+      await User.findByIdAndUpdate(userData.id, {
+        sessionId,
+        sessionExpiresAt: expiresAt,
+        lastLoginAt: new Date()
       })
       
-      return NextResponse.json({ sessionId, expiresAt })
+      return NextResponse.json({ sessionId, expiresAt: expiresAt.getTime() })
     }
     
     if (action === 'get') {
-      // Get session data
-      const session = sessions.get(sessionId)
+      // Get session data from database
+      const user = await User.findOne({ sessionId })
       
-      if (!session) {
+      if (!user) {
         return NextResponse.json({ error: 'Session not found' }, { status: 404 })
       }
       
-      if (Date.now() > session.expiresAt) {
-        sessions.delete(sessionId)
+      if (new Date() > user.sessionExpiresAt) {
+        // Clean up expired session
+        await User.findByIdAndUpdate(user._id, {
+          $unset: { sessionId: 1, sessionExpiresAt: 1 }
+        })
         return NextResponse.json({ error: 'Session expired' }, { status: 401 })
       }
       
-      return NextResponse.json({ userData: session.userData })
+      const userData = {
+        id: user._id,
+        username: user.username,
+        fullName: user.fullName,
+        email: user.email,
+        userType: user.userType,
+        isVerified: user.isVerified
+      }
+      
+      return NextResponse.json({ userData })
     }
     
     if (action === 'delete') {
-      // Delete session
-      sessions.delete(sessionId)
+      // Delete session from database
+      await User.findOneAndUpdate(
+        { sessionId },
+        { $unset: { sessionId: 1, sessionExpiresAt: 1 } }
+      )
       return NextResponse.json({ message: 'Session deleted' })
     }
     
@@ -51,14 +69,4 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
-// Clean up expired sessions every hour
-setInterval(() => {
-  const now = Date.now()
-  for (const [sessionId, session] of sessions.entries()) {
-    if (now > session.expiresAt) {
-      sessions.delete(sessionId)
-    }
-  }
-}, 60 * 60 * 1000)
 

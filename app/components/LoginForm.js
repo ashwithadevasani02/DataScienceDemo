@@ -43,7 +43,6 @@ export default function LoginForm({ userType, onLogin, onSignup }) {
         onLogin(data.user);
       }
     } catch (error) {
-      console.error("Login error:", error);
       setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -99,7 +98,7 @@ export default function LoginForm({ userType, onLogin, onSignup }) {
         {userType !== "admin" && (
           <div className="text-center">
             <button type="button" onClick={onSignup} className="text-gray-600 hover:text-gray-700 text-sm">
-              Don&apos;t have an account? Sign Up
+              Don't have an account? Sign Up
             </button>
           </div>
         )}

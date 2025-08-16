@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import Registration from '@/models/Registration'
 
+export const runtime = 'nodejs'
+
 export async function POST(request) {
   try {
     await connectDB()

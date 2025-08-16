@@ -10,31 +10,30 @@ export default function AdminDashboard({ onLogout }) {
   const [isLoading, setIsLoading] = useState(true)
 
   // Fetch registrations from API
-  const fetchRegistrations = async () => {
-    try {
-      const params = new URLSearchParams()
-      if (filterBranch !== 'all') params.append('branch', filterBranch)
-      if (filterProgram !== 'all') params.append('program', filterProgram)
-      
-      const response = await fetch(`/api/registrations?${params.toString()}`)
-      const data = await response.json()
-      
-      if (response.ok) {
-        setRegistrations(data.registrations)
-      } else {
-        console.error('Failed to fetch registrations:', data.error)
-      }
-    } catch (error) {
-      console.error('Error fetching registrations:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Fetch registrations when filters change
   useEffect(() => {
+    const fetchRegistrations = async () => {
+      try {
+        const params = new URLSearchParams()
+        if (filterBranch !== 'all') params.append('branch', filterBranch)
+        if (filterProgram !== 'all') params.append('program', filterProgram)
+        
+        const response = await fetch(`/api/registrations?${params.toString()}`)
+        const data = await response.json()
+        
+        if (response.ok) {
+          setRegistrations(data.registrations)
+        } else {
+          console.error('Failed to fetch registrations:', data.error)
+        }
+      } catch (error) {
+        console.error('Error fetching registrations:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
     fetchRegistrations()
-  }, [filterBranch, filterProgram, fetchRegistrations])
+  }, [filterBranch, filterProgram])
 
   // Filter registrations based on search term
   const filteredRegistrations = registrations.filter(registration =>

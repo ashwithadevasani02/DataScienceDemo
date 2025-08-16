@@ -98,7 +98,7 @@ export default function LoginForm({ userType, onLogin, onSignup }) {
         {userType !== "admin" && (
           <div className="text-center">
             <button type="button" onClick={onSignup} className="text-gray-600 hover:text-gray-700 text-sm">
-              Don't have an account? Sign Up
+              Don&apos;t have an account? Sign Up
             </button>
           </div>
         )}

@@ -9,8 +9,6 @@ export default function Home() {
   const [user, setUser]=useState(null)
   const [isClient, setIsClient] = useState(false)
   const [showSignup, setShowSignup]=useState(false)
-
-  // Handle client-side hydration
   useEffect(() => {
     setIsClient(true)
     const storedUser = localStorage.getItem('dsclub_user')
@@ -168,7 +166,6 @@ export default function Home() {
   return (
     <main className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header with user info and logout */}
         <header className="text-center mb-8">
           <div className="flex justify-between items-center mb-6">
             <div></div>
@@ -191,16 +188,12 @@ export default function Home() {
             Where innovation meets knowledge
           </p>
         </header>
-
-        {/* Main Content - Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 items-start">
-          {/* Left Column - Poster */}
           <div className="flex h-full items-center justify-center py-8 lg:py-0 w-full">
             <div className="flex justify-center w-full h-full items-center">
                 <Image src="/poster.png" alt="Data Science Club Poster" width={500} height={700} className="mx-auto rounded-lg shadow-xl transition-transform duration-300 hover:scale-105 object-contain max-h-[900px] w-auto" />
             </div>
           </div>
-          {/* Right Column - Form Component or Success Message */}
           <div className="flex items-center justify-center py-8 lg:py-0 w-full">
             <div className="w-full max-w-2xl flex flex-col justify-center min-h-[400px]">
               {!registrationSuccess ? (
@@ -217,7 +210,7 @@ export default function Home() {
                       Registration Successful!
                     </h2>
                     <p className="text-lg text-gray-600 mb-6">
-                      Thank you for registering with Data Science Club. We've received your application and will contact you soon with further details.
+                      Thank you for registering with Data Science Club. We&apos;ve received your application and will contact you soon with further details.
                     </p>
                     <div className="bg-green-50 rounded-lg p-4">
                       <p className="text-sm text-green-700">
@@ -231,13 +224,9 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {/* Connect With Us Section */}
         <div className="mb-16">
           <ConnectWithUs />
         </div>
-
-        {/* Footer */}
         <footer className="text-center mt-16 text-blue-200">
           <p>&copy; 2025 Data Science Club. All rights reserved.</p>
         </footer>
